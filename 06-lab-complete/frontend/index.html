@@ -1,0 +1,829 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent | Production Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0b1020;
+            --panel: #121a2d;
+            --panel2: #182238;
+            --border: #26334d;
+            --text: #edf2ff;
+            --muted: #91a0ba;
+            --primary: #818cf8;
+            --green: #34d399;
+            --red: #fb7185;
+            --yellow: #fbbf24;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        button, input { font: inherit; }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        aside {
+            background: #0e1628;
+            border-right: 1px solid var(--border);
+            padding: 28px 18px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 8px 35px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg,#818cf8,#6366f1);
+            font-size: 21px;
+        }
+
+        .brand h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 17px;
+            margin: 0;
+        }
+
+        .brand small {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .nav-label {
+            color: #687893;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            padding: 0 10px;
+            margin-bottom: 12px;
+        }
+
+        .nav-item {
+            padding: 12px;
+            border-radius: 10px;
+            color: var(--muted);
+            margin-bottom: 7px;
+            font-size: 13px;
+        }
+
+        .nav-item.active {
+            background: #252d50;
+            color: #c7d2fe;
+        }
+
+        .sidebar-bottom {
+            margin-top: 45px;
+            padding: 14px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .sidebar-bottom p {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        main { min-width: 0; }
+
+        header {
+            height: 78px;
+            padding: 0 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .environment {
+            background: #173b35;
+            color: #6ee7b7;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .content {
+            max-width: 1400px;
+            margin: auto;
+            padding: 30px 35px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 25px;
+            margin: 0 0 8px;
+        }
+
+        .welcome p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .card-label {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .card-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .card-sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--yellow);
+            margin-right: 7px;
+        }
+
+        .status-dot.online { background: var(--green); }
+        .status-dot.offline { background: var(--red); }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            margin: 0 0 17px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .chat-card {
+            min-height: 570px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .chat-header span {
+            font-size: 11px;
+            color: var(--green);
+        }
+
+        .messages {
+            flex: 1;
+            min-height: 300px;
+            max-height: 470px;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .message {
+            max-width: 88%;
+            margin-bottom: 17px;
+        }
+
+        .message.user {
+            margin-left: auto;
+        }
+
+        .message-role {
+            color: var(--muted);
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+
+        .message-content {
+            padding: 13px 15px;
+            background: var(--panel2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .message.user .message-content {
+            background: #30366b;
+            border-color: #454c91;
+        }
+
+        .message-meta {
+            margin-top: 7px;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 9px;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+
+        .chat-form input {
+            flex: 1;
+            min-width: 0;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 13px;
+            color: white;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #10152b;
+            padding: 0 19px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .side-card { margin-bottom: 17px; }
+
+        .service-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .service-row:last-child { border: 0; }
+
+        .service-status {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .config-card input {
+            width: 100%;
+            margin: 7px 0 13px;
+            padding: 11px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            font-size: 12px;
+        }
+
+        .config-card label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .config-card button {
+            width: 100%;
+            padding: 12px;
+        }
+
+        .notice {
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        .error {
+            color: var(--red);
+            font-size: 12px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+
+        .success { color: var(--green); }
+
+        .footer {
+            text-align: center;
+            color: #62718b;
+            font-size: 11px;
+            padding: 25px 0;
+        }
+
+        @media(max-width: 950px) {
+            .layout { grid-template-columns: 1fr; }
+            aside { display: none; }
+            .main-grid { grid-template-columns: 1fr; }
+        }
+
+        @media(max-width: 650px) {
+            header { padding: 0 17px; }
+            .content { padding: 22px 15px; }
+            .grid { grid-template-columns: 1fr; }
+            .welcome h2 { font-size: 21px; }
+            .chat-card { min-height: 520px; }
+            .environment { font-size: 9px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout">
+
+    <aside>
+        <div class="brand">
+            <div class="brand-icon">✦</div>
+            <div>
+                <h2>AgentFlow</h2>
+                <small>AI Infrastructure</small>
+            </div>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+        <div class="nav-item active">◈ &nbsp; Dashboard</div>
+        <div class="nav-item">✧ &nbsp; AI Playground</div>
+        <div class="nav-item">▤ &nbsp; System Health</div>
+        <div class="nav-item">⌘ &nbsp; API Configuration</div>
+
+        <div class="sidebar-bottom">
+            <strong style="font-size:12px">Production Agent</strong>
+            <p>Monitoring API, Redis connection and AI usage.</p>
+            <span style="font-size:10px;color:#34d399">
+                ● System monitoring enabled
+            </span>
+        </div>
+    </aside>
+
+    <main>
+        <header>
+            <h1>Dashboard</h1>
+            <div class="environment" id="environment">ENVIRONMENT: UNKNOWN</div>
+        </header>
+
+        <div class="content">
+
+            <div class="welcome">
+                <h2>Welcome to AgentFlow 👋</h2>
+                <p>Monitor your production AI agent and interact with your API.</p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-label">API HEALTH</div>
+                    <div class="card-value" id="healthValue">
+                        <span class="status-dot"></span>Checking
+                    </div>
+                    <div class="card-sub">GET /health</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label">REDIS READINESS</div>
+                    <div class="card-value" id="redisValue">
+                        <span class="status-dot"></span>Checking
+                    </div>
+                    <div class="card-sub">GET /ready</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-label">TOTAL AI REQUESTS</div>
+                    <div class="card-value" id="requestCount">0</div>
+                    <div class="card-sub">Requests sent from this browser</div>
+                </div>
+            </div>
+
+            <div class="main-grid">
+
+                <section class="card chat-card">
+                    <div class="chat-header">
+                        <h3>✧ AI Agent Playground</h3>
+                        <span>● Ready to chat</span>
+                    </div>
+
+                    <div class="messages" id="messages">
+                        <div class="message">
+                            <div class="message-role">AGENTFLOW AI</div>
+                            <div class="message-content">
+Xin chào! Tôi là AI Agent của bạn.
+
+Bạn có thể hỏi tôi về Docker, Deployment, API Gateway, Redis hoặc hệ thống production.
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="chat-form" id="chatForm">
+                        <input
+                            id="question"
+                            type="text"
+                            placeholder="Nhập câu hỏi của bạn..."
+                            maxlength="2000"
+                            required
+                        >
+                        <button id="sendButton" type="submit">Send ↗</button>
+                    </form>
+
+                    <div id="chatError" class="error"></div>
+                </section>
+
+                <div>
+                    <section class="card side-card">
+                        <h3 class="section-title">System Services</h3>
+
+                        <div class="service-row">
+                            <span>FastAPI Backend</span>
+                            <span class="service-status" id="backendStatus">Checking</span>
+                        </div>
+
+                        <div class="service-row">
+                            <span>Redis Database</span>
+                            <span class="service-status" id="redisStatus">Checking</span>
+                        </div>
+
+                        <div class="service-row">
+                            <span>AI Agent</span>
+                            <span class="service-status" id="agentStatus">Ready</span>
+                        </div>
+                    </section>
+
+                    <section class="card side-card">
+                        <h3 class="section-title">Usage Statistics</h3>
+
+                        <div class="service-row">
+                            <span>Input tokens</span>
+                            <strong id="inputTokens">0</strong>
+                        </div>
+
+                        <div class="service-row">
+                            <span>Output tokens</span>
+                            <strong id="outputTokens">0</strong>
+                        </div>
+
+                        <div class="service-row">
+                            <span>Total cost</span>
+                            <strong id="totalCost">$0.000000</strong>
+                        </div>
+                    </section>
+
+                    <section class="card config-card">
+                        <h3 class="section-title">API Configuration</h3>
+
+                        <label for="apiUrl">Backend URL</label>
+                        <input
+                            id="apiUrl"
+                            type="url"
+                            placeholder="https://your-api.onrender.com"
+                        >
+
+                        <label for="apiKey">API Key</label>
+                        <input
+                            id="apiKey"
+                            type="password"
+                            placeholder="Enter your API key"
+                        >
+
+                        <button id="connectButton" type="button">
+                            Connect Backend
+                        </button>
+
+                        <div id="connectionMessage" class="notice">
+                            Nhập URL backend và API Key để kết nối.
+                        </div>
+
+                        <div class="notice">
+                            API Key chỉ được giữ trong bộ nhớ trang hiện tại,
+                            không lưu vào Local Storage.
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="footer">
+                AgentFlow · Production AI Agent · Deployment & Observability Lab
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const $ = (id) => document.getElementById(id);
+
+    let backendUrl = "";
+    let apiKey = "";
+    let requestCount = 0;
+    let totalInput = 0;
+    let totalOutput = 0;
+    let totalCost = 0;
+
+    function setStatus(elementId, text, state) {
+        const element = $(elementId);
+        element.innerHTML =
+            `<span class="status-dot ${state}"></span>${text}`;
+    }
+
+    function normalizeUrl(url) {
+        return url.trim().replace(/\/+$/, "");
+    }
+
+    function showMessage(role, content, meta = "") {
+        const container = $("messages");
+        const item = document.createElement("div");
+
+        item.className = "message " + (role === "You" ? "user" : "");
+
+        const roleElement = document.createElement("div");
+        roleElement.className = "message-role";
+        roleElement.textContent = role.toUpperCase();
+
+        const contentElement = document.createElement("div");
+        contentElement.className = "message-content";
+        contentElement.textContent = content;
+
+        item.appendChild(roleElement);
+        item.appendChild(contentElement);
+
+        if (meta) {
+            const metaElement = document.createElement("div");
+            metaElement.className = "message-meta";
+            metaElement.textContent = meta;
+            item.appendChild(metaElement);
+        }
+
+        container.appendChild(item);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function apiRequest(path, options = {}) {
+        if (!backendUrl) {
+            throw new Error("Vui lòng kết nối Backend trước.");
+        }
+
+        const response = await fetch(backendUrl + path, {
+            ...options,
+            headers: {
+                ...(options.headers || {}),
+                ...(apiKey ? { "X-API-Key": apiKey } : {})
+            }
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            const detail = data.detail || `HTTP ${response.status}`;
+            throw new Error(
+                typeof detail === "string"
+                    ? detail
+                    : JSON.stringify(detail)
+            );
+        }
+
+        return data;
+    }
+
+    async function checkHealth() {
+        if (!backendUrl) return;
+
+        try {
+            const data = await apiRequest("/health");
+
+            setStatus("healthValue", "Online", "online");
+            $("backendStatus").textContent = "Online";
+            $("backendStatus").className = "service-status success";
+
+            if (data.environment) {
+                $("environment").textContent =
+                    "ENVIRONMENT: " + data.environment.toUpperCase();
+            }
+        } catch (error) {
+            setStatus("healthValue", "Offline", "offline");
+            $("backendStatus").textContent = "Offline";
+            $("backendStatus").className = "service-status";
+        }
+    }
+
+    async function checkReadiness() {
+        if (!backendUrl) return;
+
+        try {
+            await apiRequest("/ready");
+
+            setStatus("redisValue", "Connected", "online");
+            $("redisStatus").textContent = "Connected";
+            $("redisStatus").className = "service-status success";
+        } catch (error) {
+            setStatus("redisValue", "Unavailable", "offline");
+            $("redisStatus").textContent = "Unavailable";
+            $("redisStatus").className = "service-status";
+        }
+    }
+
+    async function connectBackend() {
+        const url = $("apiUrl").value;
+        const key = $("apiKey").value.trim();
+
+        if (!url) {
+            $("connectionMessage").textContent =
+                "Vui lòng nhập Backend URL.";
+            return;
+        }
+
+        try {
+            backendUrl = normalizeUrl(url);
+            apiKey = key;
+
+            $("connectionMessage").textContent = "Đang kết nối...";
+
+            const health = await apiRequest("/health");
+
+            $("connectionMessage").textContent =
+                "Kết nối backend thành công!";
+            $("connectionMessage").className = "notice success";
+
+            if (health.environment) {
+                $("environment").textContent =
+                    "ENVIRONMENT: " + health.environment.toUpperCase();
+            }
+
+            await checkReadiness();
+            setStatus("healthValue", "Online", "online");
+            $("backendStatus").textContent = "Online";
+            $("backendStatus").className = "service-status success";
+
+            $("agentStatus").textContent = "Available";
+
+        } catch (error) {
+            backendUrl = "";
+            apiKey = "";
+
+            $("connectionMessage").textContent =
+                "Kết nối thất bại: " + error.message;
+            $("connectionMessage").className = "notice";
+            
+            setStatus("healthValue", "Offline", "offline");
+            setStatus("redisValue", "Unknown", "");
+        }
+    }
+
+    $("connectButton").addEventListener("click", connectBackend);
+
+    $("chatForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const question = $("question").value.trim();
+
+        if (!question) return;
+
+        $("chatError").textContent = "";
+
+        if (!backendUrl) {
+            $("chatError").textContent =
+                "Vui lòng kết nối backend trước khi gửi câu hỏi.";
+            return;
+        }
+
+        const button = $("sendButton");
+        button.disabled = true;
+        button.textContent = "Sending...";
+
+        showMessage("You", question);
+        $("question").value = "";
+
+        const start = performance.now();
+
+        try {
+            const data = await apiRequest("/ask", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    question: question,
+                    user_id: "frontend-user"
+                })
+            });
+
+            const elapsed = Math.round(performance.now() - start);
+            const usage = data.usage || {};
+
+            const input = Number(usage.input_tokens || 0);
+            const output = Number(usage.output_tokens || 0);
+            const cost = Number(usage.cost_usd || 0);
+
+            requestCount++;
+            totalInput += input;
+            totalOutput += output;
+            totalCost += cost;
+
+            $("requestCount").textContent = requestCount;
+            $("inputTokens").textContent = totalInput.toLocaleString();
+            $("outputTokens").textContent = totalOutput.toLocaleString();
+            $("totalCost").textContent = "$" + totalCost.toFixed(6);
+
+            const meta =
+                `Latency: ${elapsed} ms · Input: ${input} tokens · ` +
+                `Output: ${output} tokens · Cost: $${cost.toFixed(6)}`;
+
+            showMessage("AI Agent", data.answer || "Không có nội dung trả về.", meta);
+
+            $("agentStatus").textContent = "Available";
+
+        } catch (error) {
+            showMessage("System Error", error.message);
+            $("chatError").textContent = error.message;
+
+            if (error.message.includes("429")) {
+                $("chatError").textContent =
+                    "Bạn đã vượt giới hạn request. Vui lòng thử lại sau.";
+            }
+
+            if (error.message.includes("402")) {
+                $("chatError").textContent =
+                    "Đã vượt ngân sách API cho phép.";
+            }
+
+        } finally {
+            button.disabled = false;
+            button.textContent = "Send ↗";
+        }
+    });
+
+    // Kiểm tra trạng thái hệ thống định kỳ.
+    setInterval(() => {
+        checkHealth();
+        checkReadiness();
+    }, 15000);
+</script>
+</body>
+</html>

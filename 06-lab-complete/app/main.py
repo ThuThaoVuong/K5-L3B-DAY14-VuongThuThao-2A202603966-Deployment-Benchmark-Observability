@@ -19,7 +19,9 @@ from app.cost_guard import check_budget, record_cost
 from app.rate_limiter import check_rate_limit
 from app.redis_client import redis_healthy
 from utils.mock_llm import ask as llm_ask
-
+from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
+from fastapi.responses import FileResponse
 
 # =========================
 # Structured JSON Logging
@@ -67,7 +69,23 @@ app = FastAPI(
     title="Production AI Agent",
     lifespan=lifespan
 )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "https://day14-production-agent-kjiu.onrender.com",
+    ],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "X-API-Key"],
+)
+FRONTEND_FILE = Path(__file__).resolve().parent.parent / "frontend" / "index.html"
 
+
+@app.get("/", include_in_schema=False)
+def frontend():
+    return FileResponse(FRONTEND_FILE)
 
 # =========================
 # Request Model
