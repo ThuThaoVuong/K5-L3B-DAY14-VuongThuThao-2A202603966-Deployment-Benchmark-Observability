@@ -40,7 +40,7 @@ Shutdown | Tắt ứng dụng đột ngột, không quản lý vòng đời | Gr
 ## Part 3: Cloud Deployment
 
 ### Exercise 3.2: Render deployment
-- URL: https://ai-agent-ohu0.onrender.com
+- URL: https://day14-production-agent-kjiu.onrender.com
 - Screenshot: ![Ảnh render](./screenshots/render%20ex3.2.png)
 
 ## Part 4: API Security
