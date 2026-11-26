@@ -39,19 +39,64 @@ Shutdown | Tắt ứng dụng đột ngột, không quản lý vòng đời | Gr
 
 ## Part 3: Cloud Deployment
 
-### Exercise 3.1: Railway deployment
-- URL: https://your-app.railway.app
-- Screenshot: [Link to screenshot in repo]
+### Exercise 3.2: Render deployment
+- URL: https://ai-agent-ohu0.onrender.com
+- Screenshot: ![Ảnh render](./screenshots/render%20ex3.2.png)
 
 ## Part 4: API Security
 
 ### Exercise 4.1-4.3: Test results
 [Paste your test outputs]
+- Ex 4.1
+    - Test không có API Key: Missing API key. Include header: X-API-Key: <your-key>
+    - Test API Key sai: Invalid API key.
+    - Kết quả: API từ chối request khi thiếu hoặc sai API Key, xác nhận cơ chế xác thực hoạt động.
+
+- Ex 4.2
+    - JWT Authentication: Lấy access token thành công qua /auth/token.
+    - Protected API: Gửi JWT Bearer Token đến /ask thành công.
+    - Test question: what is docker?
+    - Result: API trả về câu trả lời: Container là cách đóng gói app để chạy mọi nơi. Build once, run anywhere!
+
+- Ex 4.3
+    - Gửi liên tục 20 requests đến endpoint /ask.
+    - 10 requests đầu: Được xử lý thành công.
+    - Từ request 11–20: Bị từ chối với lỗi Rate limit exceeded. Trả lỗi 429 Too Many Requests
+    - Giới hạn: 10 requests / 60 giây.
+    - Thời gian chờ để thử lại: 59 giây.
 
 ### Exercise 4.4: Cost guard implementation
 [Explain your approach]
+Sử dụng Redis để lưu chi phí theo từng user và tháng (`budget:{user_id}:{month}`). Kiểm tra tổng chi phí hiện tại cộng chi phí ước tính không vượt quá $10/tháng. Nếu vượt, trả về `False`; nếu còn budget, cập nhật chi phí bằng `incrbyfloat()` và đặt TTL 32 ngày để tự động xóa dữ liệu cũ.
 
 ## Part 5: Scaling & Reliability
 
 ### Exercise 5.1-5.5: Implementation notes
 [Your explanations and test results]
+
+- Ex 5.1:
+    - `/health`: Kiểm tra agent còn hoạt động, trả về uptime, version, environment và trạng thái memory.
+    - `/ready`: Kiểm tra agent đã sẵn sàng nhận request chưa, trả về HTTP 503 nếu chưa ready.
+    - Sử dụng biến `_is_ready` để quản lý trạng thái khởi động và shutdown.
+
+- Ex 5.2:
+    - Đăng ký handler cho `SIGTERM` và `SIGINT`.
+    - Theo dõi số request đang xử lý bằng `_in_flight_requests`.
+    - Khi shutdown, ngừng nhận request mới và chờ request hiện tại hoàn thành tối đa 30 giây.
+    - Sử dụng `lifespan` và `timeout_graceful_shutdown=30` của Uvicorn.
+
+- Ex 5.3
+    - Thiết kế API theo hướng Stateless, không lưu trạng thái phiên làm việc trực tiếp trên từng instance.
+    - Sử dụng **Redis** để lưu trữ lịch sử hội thoại theo `session_id`, giúp các instance có thể truy cập chung dữ liệu.
+    - Thiết lập TTL 3600 giây cho session để tự động hết hạn sau một khoảng thời gian.
+    - API hỗ trợ tạo session mới, tiếp tục hội thoại, xem lịch sử và xóa session.
+
+- Ex 5.4
+    - Triển khai nhiều instance API để xử lý request đồng thời.
+    - Sử dụng Nginx làm Load Balancer, phân phối request đến các instance backend.
+    - Sử dụng Redis làm kho lưu trữ session dùng chung, giúp request có thể được xử lý bởi bất kỳ instance nào mà không mất lịch sử hội thoại.
+    - Theo dõi instance xử lý request thông qua trường `served_by`.
+
+- Ex 5.5
+    - Gửi nhiều request hội thoại với cùng một `session_id` để kiểm tra khả năng duy trì lịch sử.
+    - Gửi các request liên tiếp qua hệ thống có nhiều instance.
