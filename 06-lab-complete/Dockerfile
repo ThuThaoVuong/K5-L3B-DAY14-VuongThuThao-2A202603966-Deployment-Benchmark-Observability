@@ -1,4 +1,24 @@
+
+# ============================================================
+# Stage 1: Builder
+# ============================================================
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+
+RUN python -m venv /opt/venv
+
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+
+# ============================================================
 # Stage 2: Runtime
+# ============================================================
 FROM python:3.11-slim AS runtime
 
 WORKDIR /app
@@ -7,14 +27,20 @@ ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
+# Copy Python environment from builder
 COPY --from=builder /opt/venv /opt/venv
 
+# Copy backend source
 COPY app/ ./app/
 COPY utils/ ./utils/
+
+# Copy frontend
 COPY frontend/ ./frontend/
 
+# Create non-root user
 RUN useradd --create-home --shell /bin/bash appuser \
-    && chown -R appuser:appuser /app
+    && chown -R appuser:appuser /app \
+    && chown -R appuser:appuser /opt/venv
 
 USER appuser
 
