@@ -1,8 +1,8 @@
 #  Delivery Checklist — Day 14 Lab Submission
 
-> **Student Name:** _________________________  
-> **Student ID:** _________________________  
-> **Date:** _________________________
+> **Student Name:** Vương Thu Thảo 
+> **Student ID:** 2A202603966  
+> **Date:** 26/11/2026
 
 ---
 
