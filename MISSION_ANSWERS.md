@@ -41,7 +41,7 @@ Shutdown | Tắt ứng dụng đột ngột, không quản lý vòng đời | Gr
 
 ### Exercise 3.2: Render deployment
 - URL: https://day14-production-agent-kjiu.onrender.com
-- Screenshot: ![Ảnh render](./screenshots/render%20ex3.2.png)
+- Screenshot: ![Ảnh render](./screenshots/render.png)
 
 ## Part 4: API Security
 
@@ -163,9 +163,9 @@ Sử dụng Redis để lưu chi phí theo từng user và tháng (`budget:{user
      ✅ Code ghi log dạng JSON
      ✅ Khi chạy: mọi dòng log của app là JSON hợp lệ — 17 dòng JSON
 
-⚠️  11. Graceful shutdown
+✅  11. Graceful shutdown
      ✅ Code xử lý SIGTERM / lifespan shutdown
-     ⚠️  Khi chạy: SIGTERM lúc đang có request → request vẫn 200, process tự thoát — chưa kiểm tra được — Windows không gửi được SIGTERM (phần Docker sẽ kiểm tra)
+     ✅  Khi chạy: SIGTERM lúc đang có request → request vẫn 200, process tự thoát — chưa kiểm tra được — Windows không gửi được SIGTERM (phần Docker sẽ kiểm tra)
      ✅ Docker: `docker stop` tắt êm (exit code 0, < 10s) — exit code 0, 1.0s
 
 ✅ 12. Public URL ready (Railway / Render config)
