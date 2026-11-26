@@ -1,10 +1,10 @@
 # Deployment Information
 
 ## Public URL
-https://your-agent.railway.app
+https://ai-agent-ohu0.onrender.com
 
 ## Platform
-Railway / Render / Cloud Run
+Render
 
 ## Test Commands
 
