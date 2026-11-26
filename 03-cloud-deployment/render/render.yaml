@@ -42,10 +42,15 @@ services:
   # ──────────────────────────────────────
   # Redis (dùng Render Redis add-on)
   # ──────────────────────────────────────
-  - type: redis
+    # Redis / Key Value
+  - type: keyvalue
     name: agent-cache
+    region: singapore
     plan: free
     maxmemoryPolicy: allkeys-lru
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
 
 # ============================================================
 # Cách deploy:
